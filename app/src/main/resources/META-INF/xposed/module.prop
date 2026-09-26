@@ -1,0 +1,6 @@
+# Read by LSPosed / Vector managers. The hooks themselves are still loaded through the
+# legacy assets/xposed_init entry: targetApiVersion is left unset on purpose, so the
+# daemon keeps choosing the legacy loader.
+minApiVersion=93
+# The module only makes sense in system_server; lock the scope so it cannot be widened.
+staticScope=true

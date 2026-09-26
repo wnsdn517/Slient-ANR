@@ -1,0 +1,2 @@
+# Intentionally empty. Its presence marks this APK as carrying modern metadata
+# (module.prop / scope.list); the entry class is listed in assets/xposed_init.

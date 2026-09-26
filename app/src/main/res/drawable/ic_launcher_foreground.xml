@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Shield -->
+    <path
+        android:fillColor="#C4B5FD"
+        android:pathData="M54,28 L76,36 L76,54 C76,67 66,77 54,81 C42,77 32,67 32,54 L32,36 Z" />
+    <!-- Hourglass cut-out (ANR) -->
+    <path
+        android:fillColor="#2B2160"
+        android:pathData="M45,42 L63,42 L63,45 C63,50 58,53 56,55 C58,57 63,60 63,65 L63,68 L45,68 L45,65 C45,60 50,57 52,55 C50,53 45,50 45,45 Z" />
+    <path
+        android:fillColor="#C4B5FD"
+        android:pathData="M49,65 C49,62 52,60 54,59 C56,60 59,62 59,65 Z" />
+</vector>
