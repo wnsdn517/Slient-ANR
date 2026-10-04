@@ -1,5 +1,5 @@
 # Xposed entry point is loaded reflectively by LSPosed via assets/xposed_init.
--keep class io.github.silentanr.xposed.** { *; }
+-keep class io.github.wnsdn517.silentanr.xposed.** { *; }
 -keep class de.robv.android.xposed.** { *; }
 -dontwarn de.robv.android.xposed.**
 

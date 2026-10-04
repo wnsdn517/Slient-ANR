@@ -1,10 +1,13 @@
 name: Build and release APK
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
-        description: "Version name (the release is tagged v<version>)"
+        description: "Version name (e.g. 1.0.0, the release is tagged v<version>)"
         required: true
         default: "1.0.0"
 
@@ -24,9 +27,19 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Extract Version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+            echo "TAG_NAME=v${{ inputs.version }}" >> $GITHUB_ENV
+          else
+            VERSION_NAME=${GITHUB_REF_NAME#v}
+            echo "VERSION=$VERSION_NAME" >> $GITHUB_ENV
+            echo "TAG_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          fi
+
       - name: Build debug and release APKs
-        env:
-          VERSION: ${{ inputs.version }}
         run: >
           ./gradlew --no-daemon assembleDebug assembleRelease
           "-PappVersionName=$VERSION"
@@ -38,11 +51,10 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
         run: >
-          gh release create "v$VERSION"
+          gh release create "$TAG_NAME"
           app/build/outputs/apk/release/SilentANR-release.apk
           app/build/outputs/apk/debug/SilentANR-debug.apk
           --title "Silent ANR $VERSION"
           --notes "Install SilentANR-release.apk. SilentANR-debug.apk is the unminified build."
-          --target "$GITHUB_SHA"
+          --target "$GITHUB_SHA" || gh release upload "$TAG_NAME" app/build/outputs/apk/release/SilentANR-release.apk app/build/outputs/apk/debug/SilentANR-debug.apk --clobber

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.silentanr"
+    namespace = "io.github.wnsdn517.silentanr"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "io.github.silentanr"
+        applicationId = "io.github.wnsdn517.silentanr"
         minSdk = 29
         targetSdk = 35
         // CI passes these from the release workflow; local builds fall back to 1 / 1.0.0.
