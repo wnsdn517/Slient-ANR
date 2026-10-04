@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version name (e.g. 1.0.0, the release is tagged v<version>)"
+        description: "Version name (e.g. 1.0.2, tagged as v1.0.2)"
         required: true
-        default: "1.0.0"
+        default: "1.0.2"
 
 permissions:
   contents: write
@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
@@ -27,34 +29,36 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Extract Version
-        id: get_version
+      - name: Determine Version & Tag
+        id: vars
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-            echo "TAG_NAME=v${{ inputs.version }}" >> $GITHUB_ENV
+            VER="${{ inputs.version }}"
+            TAG="v${VER}"
           else
-            VERSION_NAME=${GITHUB_REF_NAME#v}
-            echo "VERSION=$VERSION_NAME" >> $GITHUB_ENV
-            echo "TAG_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+            TAG="${GITHUB_REF_NAME}"
+            VER="${TAG#v}"
           fi
+          echo "VERSION=${VER}" >> $GITHUB_OUTPUT
+          echo "TAG_NAME=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Build debug and release APKs
         run: >
           ./gradlew --no-daemon assembleDebug assembleRelease
-          "-PappVersionName=$VERSION"
-          "-PappVersionCode=$GITHUB_RUN_NUMBER"
+          "-PappVersionName=${{ steps.vars.outputs.VERSION }}"
+          "-PappVersionCode=${{ github.run_number }}"
 
-      - name: APK sizes
+      - name: Check Built APKs
         run: ls -l app/build/outputs/apk/*/*.apk
 
-      - name: Publish release
+      - name: Create Release and Upload APKs
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.TAG_NAME }}
+          name: Silent ANR ${{ steps.vars.outputs.VERSION }}
+          body: "Install SilentANR-release.apk. SilentANR-debug.apk is the unminified build."
+          files: |
+            app/build/outputs/apk/release/SilentANR-release.apk
+            app/build/outputs/apk/debug/SilentANR-debug.apk
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: >
-          gh release create "$TAG_NAME"
-          app/build/outputs/apk/release/SilentANR-release.apk
-          app/build/outputs/apk/debug/SilentANR-debug.apk
-          --title "Silent ANR $VERSION"
-          --notes "Install SilentANR-release.apk. SilentANR-debug.apk is the unminified build."
-          --target "$GITHUB_SHA" || gh release upload "$TAG_NAME" app/build/outputs/apk/release/SilentANR-release.apk app/build/outputs/apk/debug/SilentANR-debug.apk --clobber
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
