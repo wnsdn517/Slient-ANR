@@ -542,7 +542,7 @@ public final class AnrHooker {
 
             ProcInfo pi = readProcStat(p.pid);
             vss[i] = pi.vssKb;
-            rss[i] = pi.rssKb > 0 ? pi.rssKb : (mem != null && i < mem.length && mem[i] != null ? mem[i].getTotalRss() : 0);
+            rss[i] = pi.rssKb;
             cpuTimes[i] = pi.cpuTimeMs;
         }
         out.putStringArray(Contract.EXTRA_PROC_NAMES, names);
