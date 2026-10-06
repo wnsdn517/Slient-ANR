@@ -20,7 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -583,7 +583,7 @@ private fun AppDetailsAndServicesSheet(
                                                 refreshServices()
                                             }
                                         }) {
-                                            Icon(Icons.Outlined.Stop, null, tint = t.danger)
+                                            Icon(Icons.Filled.Close, null, tint = t.danger)
                                             Spacer(Modifier.width(2.dp))
                                             Text("Stop", color = t.danger)
                                         }
